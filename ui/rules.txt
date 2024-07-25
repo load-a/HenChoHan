@@ -1,0 +1,69 @@
+Hen Cho Han
+by Saramir
+
+Basic Rules
+
+Cho Han is a Japanese dice game in which a group of players bet on the outcome 
+of a dice roll. The Dealer rolls a pair of dice and keeps them hidden under a 
+cup. Players then bet on whether the sum of this dice roll will be Even ("Cho") 
+or Odd ("Han"). Once all bets are placed, the dealer reveals the dice. Any 
+players who guessed incorrectly lose their bets, while the winning players win 
+their bets and split the pot. You lose the game if you run out of money.
+
+Certain special bets can be placed instead of the typical Even/Odd bet. These 
+are harder to win but give increasing rewards if successful. These bets are:
+
+- One Die: the player may try to guess a number that will appear on any one of 
+the two dice. If correct, they receive a small bonus (+30%) to their normal 
+winnings.
+
+- Both Dice: the player may attempt to predict the exact outcome of the dice. 
+If successful they receive winnings equal to the entire pot of losing bets.
+
+- Difference: Players may bet on the difference between the two dice. Their 
+winnings will be their bet multiplied by a number based on the magnitude 
+of the difference. Below is a chart detailing the payouts:
+Diff.   Mult.
+0       x6
+1       x3
+2       x4
+3       x6
+4       x9
+5       x18
+
+- Beat the House: if a player scores six consecutive wins they are offered the 
+chance use their winnings to challenge the House directly. The Dealer will roll 
+at most five times; the player will try to guess whether the outcome will be odd
+ or even only (no special bets). If correct their winnings double. If they lose 
+ they win nothing, including the winnings from the round before this game. The 
+ player can opt to end the challenge and keep their winnings at any time.
+
+
+How to Win
+
+The object of this game is to make enough money to clear the Par before most of 
+the other players can. When at least one fifth of the group has met par, the 
+game ends and all players who have cleared par that round move onto the next 
+match. (Players who make par will be in a their own section of the round 
+summary.) The par is increased every match. The game is considered won if the 
+player can beat all eight matches. 
+
+Remember: making par in and of itself is no guarantee of victory!
+
+
+Controls
+
+Every round the player will be prompted to make a guess, followed by a bet. 
+Various keywords are acceptable in the prediction phase. A normal guess can be 
+"Cho", "Han", "Even" and so on. Initials are also acceptable shortcuts (i.e. 
+'e' instead of 'even'). Single numbers from 1 to 6 indicate a One Die guess, 
+while two numbers between 1 and 6 (separated by a space) indicate a Both Dice 
+guess. Numbers between -5 and 0 indicate a Difference guess. If the game does 
+not understand your input you will be prompted to reenter it until something 
+valid is entered.
+Bets can be any number between 1 and the player's current funds. As with the 
+guesses, invalid bets will re-prompt the player.
+
+Other keywords can be used during the guessing phase to do other tasks. "Rules" 
+will show this screen, "Quit" will end the game, "See" will show you the state 
+of the current round (NPC standings and guesses).
