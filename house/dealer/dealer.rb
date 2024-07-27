@@ -20,6 +20,13 @@ class Dealer
     attr_reader :match, :round, :par, :result
     attr_accessor :die_1, :die_2
 
+    def dice
+      {
+        die_1: die_1,
+        die_2: die_2
+      }
+    end
+
     def roll_and_advance_round
       roll
       next_round

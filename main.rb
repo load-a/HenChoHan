@@ -14,7 +14,8 @@ require_relative 'players/npc'
 require_relative 'players/player_list'
 require_relative 'players/guess_reader'
 
-# require_relative 'trick'
+require_relative 'item' 
+
 
 # LIST - an array of players
 # ROSTER - the full PlayerList object
@@ -47,6 +48,16 @@ def preview_round(list)
   puts UI.divider(PREVIEW.key.length)
 end
 
+def shop
+  selection = [HEAVY_DICE, LIGHT_DICE, EVEN_DICE, ODD_DICE]
+
+  selection.each do |die|
+    die.generate(price: 40, power: 0)
+  end
+
+  puts SHOP.to_s(*selection)
+end
+
 def play_game
   roster = PlayerList.new(length: 17, money_range: Dealer.starting_range)
   roster.par = Dealer.par
@@ -70,6 +81,8 @@ def play_game
     if Dealer.round == 1
       preview_round roster.npcs.sort_by(&:name)
     end
+
+    roster.npcs.each { |npc| Scorer.determine_win npc } # First time to prepare for any cheats
 
     # roster.human.tricks.effect(roster.npcs)
 
@@ -95,7 +108,7 @@ def play_game
       break
     end
 
-    roster.all.each { |player| Scorer.determine_win player } 
+    roster.all.each { |player| Scorer.determine_win player } # Second time to finalize things
 
     Bank.settle_up roster.all
 
@@ -118,6 +131,8 @@ def play_game
 
     if roster.match_over? Dealer.par
       puts "MATCH END!"
+
+      shop()
 
       # File.write "MatchSummary#{Dealer.match}.txt", UI.match_summary(roster.all + roster.eliminated_players).join("\n")
 
@@ -144,6 +159,17 @@ def play_game
 
   end
 end
+
+# shop
+
+# first = Weight.new
+
+# first.use(:die_1)
+
+# puts first.type
+# puts EvenDie.type
+
+# exit
 
 UI.clear_screen
 
