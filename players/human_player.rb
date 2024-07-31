@@ -9,7 +9,7 @@ class HumanPlayer < Player
   MAXIMUM_BET_SHORTCUTS = %w[00 + > max maximum most]
   PREVIOUS_SHORTCUTS = %w[. = prev previous last]
 
-  attr_accessor :tricks
+  @@cheats = []
 
   def predict # TODO: human guess becomes a signal; verification and processing will be handled after by the GuessReader
     previous_guess = guess || 'cho'
@@ -27,14 +27,14 @@ class HumanPlayer < Player
     previous_bet = bet || round_min
 
     loop do
-      puts "What is your bet? #{money_string} (#{betting_range_string})"
+      puts "What is your bet? #{UI.convert_int_to_money(money)}"
 
       self.bet = gets.chomp
 
       self.bet =  if MINIMUM_BET_SHORTCUTS.include? bet
-                    round_min
+                    1 # round_min
                   elsif MAXIMUM_BET_SHORTCUTS.include? bet
-                    [round_max, money].min
+                    money # [round_max, money].min
                   elsif PREVIOUS_SHORTCUTS.include? bet
                     previous_bet
                   elsif bet == 'back' || bet == 'b'
@@ -44,16 +44,20 @@ class HumanPlayer < Player
                     bet.to_i
                   end
 
-      break if betting_range.include? bet
+      break if bet > 0 && bet <= money
     end
   end
 
-  def betting_range_string
-    "#{convert_cash_to_string(round_min)}--#{convert_cash_to_string(round_max)}"
+  def self.cheats
+    @@cheats
+  end
+
+  def cheats
+    this.cheats
   end
 
   def finish_round
     super
-    self.streak = streak + " <-"
+    self.streak += ' <-'
   end
 end

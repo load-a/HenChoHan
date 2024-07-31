@@ -6,10 +6,14 @@ module UI
   module_function
 
   def clear_screen
+    system 'clear'
+  end
+
+  def blank_feed
     system "printf '\33c\e[3J'"
   end
 
-  def divider(length, character: '_')
+  def divider(length, character = '_')
     character * length
   end
 

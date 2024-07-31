@@ -26,4 +26,8 @@ module DealerState
       -difference
     ]
   end
+
+  def first_round?
+    round == 1
+  end
 end

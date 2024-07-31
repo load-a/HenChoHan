@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
-class RoundPreview < Screen
+class RoundSummary < Screen
 
-  TEMPLATE = '%-15<name>s %6<guess>s %-11<type>s %9<bet>s %<streak>s'
+  TEMPLATE = '%-15<name>s %6<guess>s %-11<type>s %-9<bet>s %9<winnings>s %9<money>s %4<wins>s/%-4<rounds>s %<streak>s'
   KEY = {
     name: 'Name',
     guess: 'Guess',
     type: 'Type',
     bet: 'Bet',
+    winnings: 'Winnings',
+    money: 'Money',
+    wins: 'Wins',
+    rounds: 'Rnds',
     streak: 'Streak',
   }
   LEGEND = TEMPLATE % KEY
@@ -21,6 +25,10 @@ class RoundPreview < Screen
         guess: player.guess,
         type: player.type,
         bet: UI.convert_int_to_money(player.bet),
+        winnings: UI.convert_int_to_money(player.winnings),
+        money: UI.convert_int_to_money(player.money),
+        wins: player.wins,
+        rounds: player.rounds,
         streak: player.streak
       }
     end
@@ -29,6 +37,8 @@ class RoundPreview < Screen
       [
         '-- Match %i --' % Dealer.match,
         ' - Round %i -' % Dealer.round,
+        '[%i] [%i]' % Dealer.result,
+        '%s (-%i)' % [Dealer.state, Dealer.difference],
         'Par: $%i' % Scorer.par,
         ''
       ].map do |string|
@@ -42,10 +52,25 @@ class RoundPreview < Screen
     end
 
     def screen(players)
+      index = 0
+
       header +
       [Rainbow(LEGEND).underline.italic] +
       players.map do |player|
-        player_line(player)
+        index += 1
+
+        line = Rainbow(player_line(player))
+
+        line = line.bright if player.won?
+
+        line = line.faint if player.lost_match?
+
+        if player.is_a? HumanPlayer
+          line =  player.made_money? ? line.green : line.red
+        end
+
+        index == Scorer.elite_index ? line.underline : line
+        index == players.length ? line.underline : line
       end
     end
   end

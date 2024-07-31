@@ -27,6 +27,6 @@ class NPC < Player
   end
 
   def wager
-    self.bet = rand(betting_range)
+    self.bet = rand(1..money)
   end
 end

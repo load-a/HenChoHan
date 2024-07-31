@@ -21,3 +21,9 @@ class Numeric
     self - (self % increment)
   end
 end
+
+class Object
+  def this
+    self.class
+  end
+end

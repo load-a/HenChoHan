@@ -1,178 +1,128 @@
 # frozen_string_literal: true
-# require 'debug'
+require 'debug'
 
-# require_relative 'constants'
+require_relative 'constants'
 
 require_relative 'house/dealer/dealer'
 require_relative 'house/scorer'
-require_relative 'house/bank'
+require_relative 'house/bank/bank'
 
 require_relative 'ui/ui'
 require_relative 'ui/screens/screens'
 
 require_relative 'players/npc'
-require_relative 'players/player_list'
+require_relative 'players/roster'
 require_relative 'players/guess_reader'
 
-require_relative 'item' 
+require_relative 'items/all_items' 
 
+puts StartScreen.screen
 
-# LIST - an array of players
-# ROSTER - the full PlayerList object
-
-def summarize_round(list)
-  puts ROUND_SUMMARY.header
-  puts UI.divider(ROUND_SUMMARY.key.length)
-  list.each do |player|
-    line = Rainbow(ROUND_SUMMARY.line(player))
-
-    line = line.faint if player.lost_game? 
-
-    if player.is_a? HumanPlayer
-      puts player.make_money? ? line.green : line.red
-    elsif player.won?
-      puts line.bright
-    else
-      puts line
-    end
-  end
-  puts UI.divider(ROUND_SUMMARY.key.length)
-end
-
-def preview_round(list)
-  puts PREVIEW.header
-  puts UI.divider(PREVIEW.key.length)
-  list.each do |player|
-    puts Rainbow(PREVIEW.line(player))
-  end
-  puts UI.divider(PREVIEW.key.length)
-end
-
-def shop
-  selection = [HEAVY_DICE, LIGHT_DICE, EVEN_DICE, ODD_DICE]
-
-  selection.each do |die|
-    die.generate(price: 40, power: 0)
-  end
-
-  puts SHOP.to_s(*selection)
-end
-
-def play_game
-  roster = PlayerList.new(length: 17, money_range: Dealer.starting_range)
-  roster.par = Dealer.par
-  human = roster.human
-
-  # roster.human.tricks = SHOW_WINNERS
-
-  roster.assign_betting_range(Dealer.minimum_bet, Dealer.maximum_bet)
-
-  PREVIEW[:dealer] = Dealer
-  ROUND_SUMMARY[:dealer] = Dealer
+def run_game
+  Roster.generate_list
+  human = Roster.human
 
   loop do
 
-    roster.replace_broke_npcs(Dealer.starting_range)
+    Roster.replace_eliminated_npcs
 
     Dealer.roll
 
-    roster.play_npcs
+    Roster.play_npcs
 
-    if Dealer.round == 1
-      preview_round roster.npcs.sort_by(&:name)
-    end
+    puts RoundPreview.screen(Roster.npcs.sort_by(&:name)) if Dealer.first_round?
 
-    roster.npcs.each { |npc| Scorer.determine_win npc } # First time to prepare for any cheats
 
-    # roster.human.tricks.effect(roster.npcs)
-
-    loop do
+    loop do 
       human.predict
 
-      human.guess = GuessReader.format(human.guess)
-
-      next unless GuessReader.valid? human.guess
+      human.guess = GuessReader.format human.guess
 
       case human.guess
       when 's', 'see'
-        next preview_round roster.npcs.sort_by(&:name)
+        puts RoundPreview.screen(Roster.npcs)
+        next 
       when 'r', 'rules'
         system 'cat ui/rules.txt'
-        next puts "*  * *".center(80)
+        puts "\n\n"
+        next 
       end
 
-      roster.human.wager
+      next unless GuessReader.valid? human.guess
+
+      human.wager
 
       next if human.bet == :back
 
-      break
+      break 
     end
 
-    roster.all.each { |player| Scorer.determine_win player } # Second time to finalize things
 
-    Bank.settle_up roster.all
-
-    roster.conclude_round
-
-    roster.adjust_minimum_bets
-
-    summarize_round roster.all.sort_by(&:money).reverse
-
-    Dealer.next_round
-
-    # UI.clear_screen
-
-    # case `tput cols`.to_i
-    # else
-    #   summarize_round roster.all.sort_by(&:money).reverse
-    # end
-
-    break puts "You lose." if human.lost_game?
-
-    if roster.match_over? Dealer.par
-      puts "MATCH END!"
-
-      shop()
-
-      # File.write "MatchSummary#{Dealer.match}.txt", UI.match_summary(roster.all + roster.eliminated_players).join("\n")
-
-      break puts "You will not be moving on." if roster.human_lost_match?
-
-      puts "You're moving on to the next match! (Press Enter to continue)"
-
-      _continue = gets.chomp
-
-      roster.replace_eliminated_npcs
-
-      Dealer.next_match
-
-      roster.par = Dealer.par
-      roster.assign_betting_range(Dealer.minimum_bet, Dealer.maximum_bet)
-      roster.all.each(&:finish_match)
+    Roster.all.each do |player|
+      Scorer.determine_round_win(player)
     end
 
-    if Dealer.match >= 6
-      puts "Game over"
-      File.write "WinnerRecord", roster.all.sort_by(&:money).last.match_record.join("\n")
-      break
-    end
+    Bank.settle_up Roster.all
 
+    Roster.conclude_round
+
+    Scorer.determine_elites Roster.all
+
+    puts RoundSummary.screen(Roster.all.sort_by(&:money).reverse)
+
+
+    break puts "You lose." if human.lost_match?
+
+    if Scorer.match_over? Roster.all
+      puts "Match Over!"
+
+      Roster.all.each do |player|
+        Scorer.determine_match_win player
+      end
+
+      if human.won_match? 
+        puts "You're moving on!"
+
+        Dealer.next_match
+
+        Scorer.par *= 3
+
+        Roster.all.each do |player|
+          player.money = 50 * Dealer.match
+        end
+        # Roster.replace_eliminated_npcs
+      else
+        puts "Didn't make Elite. Game Over."
+        break
+      end
+    else
+      Dealer.next_round
+    end
   end
 end
 
-# shop
+items = [Forsight, Weight.new] # [EvenDie, OddDie, HeavyDie, LightDie, Weight.new]
 
-# first = Weight.new
+stock = items.sample(2)
 
-# first.use(:die_1)
+puts Shop.screen(stock)
 
-# puts first.type
-# puts EvenDie.type
+puts "Pick an Item"
+pick = gets.chomp
 
-# exit
+selection = stock.select { |item| pick == item.name || pick.to_i == stock.index(item) + 1 }[0]
 
-UI.clear_screen
+HumanPlayer.cheats << selection
 
-puts START_SCREEN
+HumanPlayer.cheats.each(&:use)
 
-play_game
+HumanPlayer.cheats.reject! { |cheat| cheat.destroy? }
+
+puts Dealer.dice
+
+puts HumanPlayer.cheats.map(&:name)
+# human.tricks << selection
+
+exit
+
+run_game

@@ -7,8 +7,10 @@ class Item
   @type = :item
   @description = 'Is an Item.'
 
+  @destroy = false
+
   class << self
-    attr_accessor :name, :base_price, :description, :type
+    attr_accessor :name, :base_price, :description, :type, :destroy
 
     def price(multiplier = 1)
       base_price * multiplier
@@ -21,115 +23,46 @@ class Item
         '%s' % description
       ]
     end
-  end
-end
 
-class Trick < Item
-  @@type = :trick
-
-  def self.type
-    @@type
-  end
-
-  def type
-    @@type
-  end
-end
-
-
-class SwapDie < Trick
-  NUMBERS = [0]
-  @@description = "\nSwap out one of the Dealer\'s dice for this."
-
-  class << self
-
-    def description
-      @description + @@description
+    def stats
+      {
+        name: name,
+        description: description,
+        price: price,
+        type: type
+      }
     end
 
-    def use(switch)
-      Dealer.send("#{switch}=", self::NUMBERS) 
+    def pick_die(message = "Use on which die: ")
+      puts message + Dealer.dice.to_s
+      replace = gets.chomp.to_i
+
+      case replace
+      when 1
+        replace = :die_1
+      when 2
+        replace = :die_2
+      else
+        replace = :skip
+      end
+
+      replace
+    end
+
+    def destroy?
+      @destroy
     end
   end
-end
 
-class EvenDie < SwapDie
-
-  NUMBERS = [2, 4, 6]
-
-  @name = 'Even Dice'
-  @base_price = 200
-  @description = 'A die with only even numbers.'
-end
-
-class OddDie < SwapDie
-
-  NUMBERS = [1, 3, 5]
-
-  @name = 'Odd Dice'
-  @base_price = 200
-  @description = 'A die with only odd numbers.'
-end
-
-class LightDie < SwapDie
-
-  NUMBERS = [1, 2, 3]
-
-  @name = 'Light Dice'
-  @base_price = 200
-  @description = 'A die with the numbers 1, 2 and 3.'
-end
-
-class HeavyDie < SwapDie
-
-  NUMBERS = [4, 5, 6]
-
-  @name = 'Heavy Dice'
-  @base_price = 200
-  @description = 'A die with the numbers 4, 5, and 6.'
-end
-
-class Weight < Trick
-  @name = "Weight"
-  @base_price = 250
-
-  attr_writer :name, :number
-
-  def initialize(number = rand(1..6))
-    self.name = self.class.name
-    self.number = number
+  def destroy
+    this.destroy = true
   end
 
-  public
-
-  attr_reader :name, :number
-
-  def base_price
-    self.class.base_price
-  end
-
-  def use(which_die)
-    altered_die = Dealer.send(which_die).dup << number
-    Dealer.send("#{which_die}=", altered_die)
-  end
-
-  def type
-    @@type
+  def destroy?
+    this.destroy
   end
 end
 
-
-class Vision < Trick # or Item? Since non-trick items can also have future vision?
-end
-
-class Coattails < Vison
-end
-
-class Foresight < Vision
-end
-
-class Reroll < Vision
-end
 
 # Item Ideas
 
