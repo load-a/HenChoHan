@@ -8,17 +8,17 @@ module PlayerGenerator
   def generate_human(money)
     # puts "What is your name?"
     name = "Saramir" # gets.chomp
-    self.human = HumanPlayer.new(name, money: money)
+    self.human = HumanPlayer.reset(name, money)
   end
 
   def generate_npcs(money)
     name_list = NPC_NAMES.sample(length)
-    self.npcs = name_list.map { |name| NPC.new(name, money: money) }
+    self.npcs = name_list.map { |name| NPC.new(name, money) }
   end
 
   def replace_eliminated_npcs(money = 50)
     npcs.map! do |npc|
-      npc.lost_match? ? NPC.new(available_names.sample, money: money) : npc 
+      npc.lost_match? ? NPC.new(available_names.sample, money) : npc 
     end
   end
 
@@ -27,9 +27,90 @@ module PlayerGenerator
   end
 end
 
+module PlayerGroups
+  def odds
+    all.select do |player|
+      player.type == :odd
+    end
+  end
+
+  def evens
+    all.select do |player|
+      player.type == :even
+    end
+  end
+
+  def singles
+    all.select do |player|
+      player.type == :one_die
+    end
+  end
+
+  def doubles
+    all.select do |player|
+      player.type == :both_dice
+    end
+  end
+
+  def differences
+    all.select do |player|
+      player.type == :difference
+    end
+  end
+
+  def odds
+    all.select do |player|
+      player.type == :odd
+    end
+  end
+
+  def not_evens
+    all.select do |player|
+      player.type != :even
+    end
+  end
+
+  def not_singles
+    all.select do |player|
+      player.type != :one_die
+    end
+  end
+
+  def not_doubles
+    all.select do |player|
+      player.type != :both_dice
+    end
+  end
+
+  def not_differences
+    all.select do |player|
+      player.type != :difference
+    end
+  end
+
+  def others
+    [singles, doubles, differences]
+  end
+
+  def normals
+    [evens, odds]
+  end
+
+  def groups
+    {
+      evens: evens,
+      odds: odds,
+      singles: singles,
+      doubles: doubles,
+      differences: differences
+    }
+  end
+end
+
 class Roster
 
   extend PlayerGenerator
+  extend PlayerGroups
 
   @length = 15
   @human = nil

@@ -21,7 +21,6 @@ class SwapDie < Item
 
       return if replacement == :skip
 
-      @destroy = true
       Dealer.send("#{replacement}=", self::NUMBERS) 
     end
   end

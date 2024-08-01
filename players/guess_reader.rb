@@ -30,12 +30,9 @@ module GuessReader
 
     if guess.is_a? Array
       guess[0..1].map(&:to_i)
-    elsif guess.to_i.to_s == guess 
-      if guess.to_i > 0
-        guess.to_i.clamp(1, 6)
-      else
-        guess.to_i.clamp(-5, 0)
-      end
+    elsif guess.is_numeric?
+      guess = guess.to_i
+      guess.positive? ? guess.clamp(1, 6) : guess.clamp(-5, 0)
     else
       guess
     end

@@ -16,13 +16,13 @@ require_relative 'players/guess_reader'
 
 require_relative 'items/all_items' 
 
-puts StartScreen.screen
 
 def run_game
   Roster.generate_list
   human = Roster.human
 
   loop do
+    previous_round = RoundSummary.screen(Roster.all.sort_by(&:money).reverse)
 
     Roster.replace_eliminated_npcs
 
@@ -32,20 +32,23 @@ def run_game
 
     puts RoundPreview.screen(Roster.npcs.sort_by(&:name)) if Dealer.first_round?
 
-
     loop do 
       human.predict
 
-      human.guess = GuessReader.format human.guess
-
       case human.guess
       when 's', 'see'
-        puts RoundPreview.screen(Roster.npcs)
+        puts RoundPreview.screen(Roster.npcs.sort_by(&:name))
         next 
       when 'r', 'rules'
         system 'cat ui/rules.txt'
         puts "\n\n"
         next 
+      when 'p', 'previous'
+        puts previous_round
+        next
+      when 'd', 'dealer'
+        puts DealerStatus.screen
+        next
       end
 
       next unless GuessReader.valid? human.guess
@@ -83,6 +86,8 @@ def run_game
       if human.won_match? 
         puts "You're moving on!"
 
+        shop
+
         Dealer.next_match
 
         Scorer.par *= 3
@@ -90,6 +95,7 @@ def run_game
         Roster.all.each do |player|
           player.money = 50 * Dealer.match
         end
+
         # Roster.replace_eliminated_npcs
       else
         puts "Didn't make Elite. Game Over."
@@ -101,28 +107,29 @@ def run_game
   end
 end
 
-items = [Forsight, Weight.new] # [EvenDie, OddDie, HeavyDie, LightDie, Weight.new]
+def shop
+  items = [EvenDie, OddDie, HeavyDie, LightDie, Weight.new]
+  stock = items.sample(2)
 
-stock = items.sample(2)
+  puts Shop.screen(stock)
 
-puts Shop.screen(stock)
+  puts "Pick an Item"
+  pick = gets.chomp
 
-puts "Pick an Item"
-pick = gets.chomp
+  return puts "nothing picked" unless stock.map(&:name).include? pick
 
-selection = stock.select { |item| pick == item.name || pick.to_i == stock.index(item) + 1 }[0]
+  selection = stock.select { |item| pick == item.name || pick.to_i == stock.index(item) + 1 }[0]
 
-HumanPlayer.cheats << selection
+  HumanPlayer.cheats << selection
 
-HumanPlayer.cheats.each(&:use)
+  puts "Selected #{selection.name}"
 
-HumanPlayer.cheats.reject! { |cheat| cheat.destroy? }
+  selection.use
+end
 
-puts Dealer.dice
 
-puts HumanPlayer.cheats.map(&:name)
-# human.tricks << selection
 
-exit
-
+# puts HumanPlayer.cheats.map(&:name)
+UI.blank_feed
+puts StartScreen.screen
 run_game

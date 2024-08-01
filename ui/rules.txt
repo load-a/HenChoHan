@@ -31,7 +31,7 @@ Diff.   Mult.
 4       x9
 5       x18
 
-- Beat the House: if a player scores six consecutive wins they are offered the 
+- Beat the House[TBD]: if a player scores six consecutive wins they are offered the 
 chance use their winnings to challenge the House directly. The Dealer will roll 
 at most five times; the player will try to guess whether the outcome will be odd
  or even only (no special bets). If correct their winnings double. If they lose 

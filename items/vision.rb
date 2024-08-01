@@ -6,12 +6,19 @@ class Vision < Item # or Item? Since non-trick items can also have future vision
   @type = :vision
 end
 
-class Coattails < Vison
+class Coattails < Vision
+
 end
 
 class Foresight < Vision
+
 end
 
 class Reroll < Vision
 
+
+  class << self
+    def use
+    end
+  end
 end

@@ -30,6 +30,8 @@ class RoundPreview < Screen
         '-- Match %i --' % Dealer.match,
         ' - Round %i -' % Dealer.round,
         'Par: $%i' % Scorer.par,
+        'Pot: $%i' % Bank.total_pot,
+        'Evens: $%<evens>i  Odds: $%<odds>i  Others: $%<others>i' % Bank.spread,
         ''
       ].map do |string|
         line = Rainbow( string.center(LENGTH) )
@@ -38,7 +40,10 @@ class RoundPreview < Screen
     end
 
     def player_line(player)
-      TEMPLATE % player_info(player)
+      line = Rainbow(TEMPLATE % player_info(player))
+      line = line.orange.italic if Bank.can_clear_par? player
+      line = line.faint.italic if player.bet == player.money
+      line
     end
 
     def screen(players)
@@ -46,7 +51,8 @@ class RoundPreview < Screen
       [Rainbow(LEGEND).underline.italic] +
       players.map do |player|
         player_line(player)
-      end
+      end + 
+      [('E:%i, O:%i, #:%i, ##:%i, -#:%i' % Roster.groups.values.map(&:length)).center(LENGTH)]
     end
   end
 end

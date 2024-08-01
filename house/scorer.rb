@@ -48,7 +48,7 @@ class Scorer
         end
       end
 
-      @elite_index = elites.length 
+      self.elite_index = elites.length 
 
       elites
     end

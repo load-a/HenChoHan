@@ -65,11 +65,12 @@ class RoundSummary < Screen
 
         line = line.faint if player.lost_match?
 
-        if player.is_a? HumanPlayer
+        if player == HumanPlayer
           line =  player.made_money? ? line.green : line.red
         end
 
-        index == Scorer.elite_index ? line.underline : line
+        line = line.underline if index == Scorer.elite_index
+        
         index == players.length ? line.underline : line
       end
     end

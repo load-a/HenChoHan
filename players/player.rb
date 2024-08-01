@@ -38,34 +38,7 @@ module PlayerState
   end
 end
 
-class Player
-  include PlayerState
-
-  attr_accessor :name, :money, :bet, :guess, :winnings, :wins, 
-                :rounds, :streak, :win_status, :elite_status
-
-  def initialize(name, money: 50)
-    self.name = name
-    self.money = money
-    self.winnings = 0
-    self.guess = :none
-    self.bet = 0
-
-    self.wins = 0
-    self.rounds = 0
-
-    self.streak = '......'   
-
-    self.win_status = :none
-    self.elite_status = false
-  end
-
-  def predict; end
-
-  def wager; end
-
-  def finish_match; end
-
+module PlayerActions
   def finish_round
     self.streak = streak[1...6]
 
@@ -80,6 +53,30 @@ class Player
     self.money += winnings
 
     self.win_status = :eliminated if money < 1
+  end
+end
+
+class Player
+  include PlayerState
+  include PlayerActions
+
+  attr_accessor :name, :money, :bet, :guess, :winnings, :wins, 
+                :rounds, :streak, :win_status, :elite_status
+
+  def initialize(name, money = 50)
+    self.name = name
+    self.money = money
+    self.winnings = 0
+    self.guess = :none
+    self.bet = 0
+
+    self.wins = 0
+    self.rounds = 0
+
+    self.streak = '......'   
+
+    self.win_status = :none
+    self.elite_status = false
   end
 
   def type

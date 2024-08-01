@@ -47,4 +47,8 @@ class Weight < Item
 
     Dealer.send("#{selection}=", Dealer.send("#{selection}").dup << number)
   end
+
+  def type
+    @type
+  end
 end

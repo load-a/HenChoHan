@@ -7,7 +7,7 @@ require_relative '../constants'
 class NPC < Player
   include NPCBehavior 
 
-  def initialize(name, money: 50)
+  def initialize(name, money)
     super
     initialize_behavior
     # self.comment = temperment_name[0] + ":" + betting_style_name[0] # TESTING
