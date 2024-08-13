@@ -14,21 +14,33 @@ require_relative 'players/npc'
 require_relative 'players/roster'
 require_relative 'players/guess_reader'
 
-require_relative 'items/all_items' 
+require_relative 'items/all_items'
 
+require_relative 'game'
+require_relative 'shop'
+
+ITEMS = [
+  EvenDie, OddDie, HeavyDie, LightDie, Weight.new,
+Coattails.new, Foresight.new, Reroll.new
+  ]
 
 def run_game
-  Roster.generate_list
+  Roster.generate_list(Bank.starting_money)
   human = Roster.human
+  previous_round = ''
+
+  human.items << Reroll.new(4)
 
   loop do
-    previous_round = RoundSummary.screen(Roster.all.sort_by(&:money).reverse)
-
     Roster.replace_eliminated_npcs
 
     Dealer.roll
 
     Roster.play_npcs
+
+    Roster.all.each do |player|
+      Scorer.determine_round_win(player)
+    end
 
     puts RoundPreview.screen(Roster.npcs.sort_by(&:name)) if Dealer.first_round?
 
@@ -36,6 +48,30 @@ def run_game
       human.predict
 
       case human.guess
+      when 'i', 'item', 'items', 'u', 'use'
+        if human.items.empty?
+          puts 'No items.'
+          next
+        end
+
+        puts Cheat.screen human.items
+
+        if UI.query 'Use an item?'
+
+          if human.items.none? { |item| item.uses_left.positive? }
+            puts 'No uses left.'
+            next
+          end
+
+          selected_item = if human.items.one? { |item| item.uses_left.positive? }
+                            human.items.select { |item| item.uses_left.positive? }[0].use
+                          else
+                            UI.menu_select(human.items, 'Which one?')
+                          end
+          human.use selected_item unless selected_item.nil?
+        end
+
+        next
       when 's', 'see'
         puts RoundPreview.screen(Roster.npcs.sort_by(&:name))
         next 
@@ -44,10 +80,13 @@ def run_game
         puts "\n\n"
         next 
       when 'p', 'previous'
-        puts previous_round
+        puts previous_round unless Dealer.first_round? && Dealer.match == 1
         next
       when 'd', 'dealer'
         puts DealerStatus.screen
+        next
+      when 'm', 'me'
+        puts '%s: %s %s' % [human.name, UI.convert_int_to_money(human.money), human.streak]
         next
       end
 
@@ -60,6 +99,7 @@ def run_game
       break 
     end
 
+    human.use_delays
 
     Roster.all.each do |player|
       Scorer.determine_round_win(player)
@@ -71,20 +111,23 @@ def run_game
 
     Scorer.determine_elites Roster.all
 
-    puts RoundSummary.screen(Roster.all.sort_by(&:money).reverse)
+    previous_round = RoundSummary.screen(Roster.all.sort_by(&:money).reverse)
+    puts previous_round
 
 
-    break puts "You lose." if human.lost_match?
+    break puts 'You lose.' if human.lost_match?
 
     if Scorer.match_over? Roster.all
-      puts "Match Over!"
+      puts 'Match Over!'
 
       Roster.all.each do |player|
         Scorer.determine_match_win player
       end
 
       if human.won_match? 
-        puts "You're moving on!"
+        puts "You're moving on!" + Rainbow(' (Press Enter to continue.)').faint
+
+        UI.continue
 
         shop
 
@@ -93,7 +136,11 @@ def run_game
         Scorer.par *= 3
 
         Roster.all.each do |player|
-          player.money = 50 * Dealer.match
+          player.money = Bank.starting_money
+        end
+
+        HumanPlayer.items.each do |item|
+          item.reset if item.respond_to? 'reset'
         end
 
         # Roster.replace_eliminated_npcs
@@ -108,28 +155,50 @@ def run_game
 end
 
 def shop
-  items = [EvenDie, OddDie, HeavyDie, LightDie, Weight.new]
-  stock = items.sample(2)
+  ITEMS.select { |item| item.type == :vision }.each { |item| item.level = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4].sample }
+
+  stock = (ITEMS - HumanPlayer.items).sample(4)
+
+  stock.each do |item|
+    item.roll_level if item.respond_to? 'roll_level'
+  end
 
   puts Shop.screen(stock)
 
-  puts "Pick an Item"
-  pick = gets.chomp
+  loop do
+    selection = UI.menu_select(stock, "Buy one item ($#{HumanPlayer.money})")
 
-  return puts "nothing picked" unless stock.map(&:name).include? pick
+    if selection.nil?
+      if UI.query 'Skip Shop?'
+        puts 'Shop skipped.'
+        break 
+      else
+        next
+      end
 
-  selection = stock.select { |item| pick == item.name || pick.to_i == stock.index(item) + 1 }[0]
+    else
+      if selection.price > HumanPlayer.money
+        next puts 'Cannot afford item.'
+      end
 
-  HumanPlayer.cheats << selection
+      HumanPlayer.items << selection
+      puts "Selected #{selection.name}"
 
-  puts "Selected #{selection.name}"
+      case selection.type
+      when :swap_die
+        break unless UI.query 'Use now?'
+        selection.use 
+      when :vision
+        #use later
+      end
 
-  selection.use
+      break
+    end
+  end
 end
-
-
 
 # puts HumanPlayer.cheats.map(&:name)
 UI.blank_feed
 puts StartScreen.screen
 run_game
+

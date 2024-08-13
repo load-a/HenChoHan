@@ -7,6 +7,9 @@ DIE = %w[1 2 3 4 5 6]
 NUMBER = %w[2 3 4 5 6 7 8 9 10 11 12]
 DIFFERENCE = %w[0 -1 -2 -3 -4 -5]
 
+YES = %w[1 y yes hai sou indeed ok sure yeah yea si]
+NO = %[0 n no nai chigau iie nah nope]
+
 VALID_GUESS = EVEN + ODD + DIE + NUMBER + DIFFERENCE
 VALID_INPUT = VALID_GUESS + QUIT + OPTIONS
 
@@ -33,6 +36,10 @@ end
 class Object
   def this
     self.class
+  end
+
+  def parent
+    self.superclass
   end
 end
 

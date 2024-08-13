@@ -1,24 +1,36 @@
 # frozen_string_literal: true
 
-class Item
+module Level
+  attr_writer :level
 
+  def level
+    @level ||= 1
+  end
+end
+
+class Item
+  extend Level
+  include Level
   @name = 'Item'
-  @base_price = 100
+  @price_percent = 0.5
   @type = :item
   @description = 'Is an Item.'
-
+  @uses = 1
+  @uses_left = 1
+  @level = 1
   @destroy = false
 
   class << self
-    attr_accessor :name, :base_price, :description, :type, :destroy
+    attr_accessor :name, :price_percent, :description, :type, :destroy,
+                  :uses_left, :uses
 
-    def price(multiplier = 1)
-      base_price * multiplier
+    def price
+      price_percent * Scorer.par
     end
 
     def to_s(price_multiplier = 1)
       [
-        '%s $%i' % [name, price(price_multiplier)],
+        '%s $%i' % [name, price],
         Rainbow('(%s)' % type).italic,
         '%s' % description
       ]
@@ -29,7 +41,10 @@ class Item
         name: name,
         description: description,
         price: price,
-        type: type
+        type: type,
+        level:level,
+        uses: uses,
+        uses_left: uses_left
       }
     end
 
@@ -49,17 +64,21 @@ class Item
       replace
     end
 
-    def destroy?
-      @destroy
+    def use
+      @uses_left -= 1
     end
-  end
-
-  def destroy
-    this.destroy = true
   end
 
   def destroy?
     this.destroy
+  end
+
+  def uses
+    this.uses
+  end
+
+  def use
+    @uses_left -= 1
   end
 end
 

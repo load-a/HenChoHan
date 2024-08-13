@@ -28,5 +28,17 @@ class Bank # < House
     def can_clear_par?(player)
       hypothetical_earnings(player) >= Scorer.par
     end
+
+    def minimum_bet
+      [(Scorer.par * 0.01).round_down(5).to_i, 1].max
+    end
+
+    def maximum_bet
+      (Scorer.par * 0.25).round_up(10).to_i
+    end
+
+    def starting_money
+      (Scorer.par * 0.05).round_up(10).to_i
+    end
   end
 end

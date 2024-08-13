@@ -1,30 +1,27 @@
 # frozen_string_literal: true
 
-class Shop < Screen
+class Cheat < Screen
 
-  TITLE = "Shop"
+  TITLE = "Items"
   SHOP_LENGTH = 50
 
   class << self
-    ROMAN_NUMERALS = %w[Z I II III IV V VI VII VIII IX X]
     def item_listing(item)
       [
-        '%-10<name>s Lv. %-2<level>s $%<price>s',
-        '%<type>s',
+        '%<name>s Lv. %<level>s (%<type>s)',
+        'Uses: %<uses_left>s/%<uses>s',
         '%<description>s',
         UI.divider(SHOP_LENGTH)
       ].map { |line| line % item.stats}
     end
 
     def screen(items)
-      index = 0
       [
         TITLE,
         UI.divider(SHOP_LENGTH)
-      ] +
+      ] + 
       items.map do |item|
-        index += 1
-        ["#{ROMAN_NUMERALS[index]}".center(SHOP_LENGTH)] << item_listing(item)
+        item_listing(item)
       end
     end
   end

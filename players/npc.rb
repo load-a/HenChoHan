@@ -18,7 +18,7 @@ class NPC < Player
                                     when :normal
                                       (EVEN + ODD).sample
                                     when :one_die
-                                      NUMBER.sample
+                                      rand(1..6).to_s
                                     when :both_dice
                                       [DIE.sample, DIE.sample]
                                     when :difference
@@ -27,6 +27,6 @@ class NPC < Player
   end
 
   def wager
-    self.bet = rand(1..money)
+    self.bet = rand(Bank.minimum_bet..[money, Bank.maximum_bet].min).to_i
   end
 end

@@ -36,4 +36,35 @@ module UI
       "$#{int}"
     end
   end
+
+  def menu_select(options, prompt = 'Make a selection:')
+    puts prompt + ' ' + Rainbow("(name or number)").faint
+    pick = gets.downcase.chomp
+
+    exit_on_quit pick
+
+    selection = options.select do |option| 
+      pick == option.name.downcase || 
+      pick.to_i == options.index(option) + 1 
+    end
+
+    selection[0]
+  end
+
+  def query(prompt = "Are you sure?")
+    puts prompt
+    answer = gets.chomp
+    exit_on_quit answer
+    YES.include? answer
+  end
+  alias ask query
+  alias confirm query
+
+  def continue
+    _continue = gets
+  end
+
+  def exit_on_quit(input)
+    exit if QUIT.include? input
+  end
 end

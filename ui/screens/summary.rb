@@ -39,6 +39,7 @@ class RoundSummary < Screen
         ' - Round %i -' % Dealer.round,
         '[%i] [%i]' % Dealer.result,
         '%s (-%i)' % [Dealer.state, Dealer.difference],
+        'Min: %i - Max: %i' % [Bank.minimum_bet, Bank.maximum_bet],
         'Par: $%i' % Scorer.par,
         ''
       ].map do |string|

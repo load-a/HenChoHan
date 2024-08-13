@@ -76,6 +76,7 @@ module Bookie
   end
 
   def standard_cut
+    shares = 1 if shares&.zero? || shares.nil?
     pot / shares
   end
 

@@ -96,13 +96,21 @@ module PlayerGroups
     [evens, odds]
   end
 
+  def winners
+    all.select do |player|
+      player.is_a?(NPC) &&
+      player.win_status == :round
+    end
+  end
+
   def groups
     {
       evens: evens,
       odds: odds,
       singles: singles,
       doubles: doubles,
-      differences: differences
+      differences: differences,
+      winners: winners
     }
   end
 end
@@ -120,11 +128,12 @@ class Roster
 
     attr_accessor :length, :human, :npcs
 
-    def generate_list(money: 50)
+    def generate_list(money = 50)
       generate_human(money)
       generate_npcs(money)
     end
 
+    # @return [Array<Player>]
     def all
       [human] + npcs
     end

@@ -27,6 +27,15 @@ class Dealer
     def roll
       @result = [@die_1.sample, @die_2.sample]
     end
+    alias reroll roll
+
+    def result_1
+      @result[0]
+    end
+
+    def result_2
+      @result[1]
+    end
 
     def next_round
       @round += 1
@@ -35,6 +44,18 @@ class Dealer
     def next_match
       @round = 1
       @match += 1
+    end
+
+    def start_of_game?
+      first_match? && first_round?
+    end
+
+    def first_round?
+      @round == 1
+    end
+
+    def first_match?
+      @match == 1
     end
   end
 end

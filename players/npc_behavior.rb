@@ -46,7 +46,12 @@ module NPCBehavior
                 :betting_style_name
 
   def assign_temperment
-    self.temperment_name = TEMPERMENTS.keys.sample
+    self.temperment_name = %i[
+      safe safe safe safe safe safe safe safe safe safe safe safe 
+      timid timid timid timid timid 
+      variable variable
+      risky
+      ].sample
     self.temperment = TEMPERMENTS[temperment_name]
   end
 

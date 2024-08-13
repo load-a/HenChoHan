@@ -12,12 +12,13 @@ class HumanPlayer
   PREVIOUS_SHORTCUTS = %w[. = prev previous last]
 
   class << self
-    attr_accessor :name, :money, :bet, :guess, :winnings, :wins, 
-                  :rounds, :streak, :win_status, :elite_status, :cheats
+    attr_accessor :name, :money, :bet, :guess, :winnings, :wins,
+                  :rounds, :streak, :win_status, :elite_status, :items,
+                  :delays
 
     def reset(name = "Saramir", money = 50)
       @name = name
-      @money = 300
+      @money = money
       
       @winnings = 0
       @guess = 'cho'
@@ -32,7 +33,8 @@ class HumanPlayer
       @elite_status = false
       type
 
-      @cheats = []
+      self.items = []
+      self.delays = []
 
       self
     end
@@ -74,9 +76,9 @@ class HumanPlayer
         return if PREVIOUS_SHORTCUTS.include? raw_bet
 
         self.bet =  if MINIMUM_BET_SHORTCUTS.include? raw_bet
-                      1 # round_min
+                      Bank.minimum_bet
                     elsif MAXIMUM_BET_SHORTCUTS.include? raw_bet
-                      money # [round_max, money].min
+                      [money, Bank.maximum_bet].min
                     elsif raw_bet == 'back' || raw_bet == 'b'
                       self.bet = :back
                       break 
@@ -84,7 +86,7 @@ class HumanPlayer
                       raw_bet.to_i
                     end
 
-        break if (1..money).include? bet
+        break if (Bank.minimum_bet..money).include? bet
       end
     end
 
@@ -97,5 +99,24 @@ class HumanPlayer
       GuessReader.infer_type guess
     end
 
+    def use(item)
+      return unless item.uses_left > 0
+      if item.kind_of?(Delay)
+        if @delays.include? item
+          puts "Already in use"
+        else
+          @delays << item 
+        end
+      else
+        item.use
+      end
+    end
+
+    def use_delays
+      @delays.each do |item|
+        item.use
+      end
+      @delays.clear
+    end
   end
 end

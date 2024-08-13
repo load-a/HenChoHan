@@ -30,6 +30,8 @@ module GuessReader
 
     if guess.is_a? Array
       guess[0..1].map(&:to_i)
+    elsif guess.nil?
+      guess = :none
     elsif guess.is_numeric?
       guess = guess.to_i
       guess.positive? ? guess.clamp(1, 6) : guess.clamp(-5, 0)
@@ -42,7 +44,7 @@ module GuessReader
     if guess.is_a? Array
       guess.all? { |die| DIE.include? die.to_s }
     else
-      VALID_INPUT.include? guess.to_s
+      VALID_GUESS.include? guess.to_s
     end
   end
 end

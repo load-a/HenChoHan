@@ -29,6 +29,8 @@ class RoundPreview < Screen
       [
         '-- Match %i --' % Dealer.match,
         ' - Round %i -' % Dealer.round,
+        'Betting Range',
+        ' $%i -- $%i' % [Bank.minimum_bet, Bank.maximum_bet],
         'Par: $%i' % Scorer.par,
         'Pot: $%i' % Bank.total_pot,
         'Evens: $%<evens>i  Odds: $%<odds>i  Others: $%<others>i' % Bank.spread,

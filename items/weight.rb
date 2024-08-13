@@ -4,24 +4,23 @@ require_relative 'item'
 
 class Weight < Item
   @name = "Weight"
-  @base_price = 100
+  @price_percent = 1.0
   @type = :consumable
 
-  attr_writer :name, :number, :description, :base_price
+  attr_accessor :name, :number, :description, :price_percent, :uses, :uses_left,
+                :level
 
   def initialize(number = rand(1..6))
     self.name = self.class.name
     self.number = number
     self.description = "Increases the likelihood of rolling a #{number}."
-    self.base_price = self.class.base_price
+    self.price_percent = self.class.price_percent
+    self.level = 1
+    self.uses_left = 1
   end
 
-  public
-
-  attr_reader :name, :number, :description, :base_price
-
-  def price(mult = 1)
-    base_price * mult
+  def price
+    price_percent * Scorer.par
   end
 
   def use(which_die)
@@ -34,7 +33,10 @@ class Weight < Item
       name: name,
       description: description,
       price: price,
-      type: type
+      type: type,
+      level:level,
+      uses: uses,
+      uses_left: uses_left
     }
   end
 

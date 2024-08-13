@@ -4,9 +4,10 @@
 
 class Scorer
 
-  SAFE_PERCENT = 0.20
+  SAFE_PERCENT = 0.50
+  PROGRESSION_TABLE = [100, 750, 2_000, 8_000, 40_000, 100_000, 250_000] # after this it just doubles
 
-  @par = 300
+  @par = Dealer.match > 7 ? @par * 2 : PROGRESSION_TABLE[Dealer.match - 1]
   @elite_index = 0
 
   class << self

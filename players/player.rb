@@ -26,7 +26,7 @@ module PlayerState
   end
 
   def broke?
-    money < 1
+    money < Bank.minimum_bet
   end
 
   def made_money?
