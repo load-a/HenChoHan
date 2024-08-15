@@ -7,51 +7,50 @@ class HumanPlayer
   extend PlayerActions
   extend PlayerState
 
-  MINIMUM_BET_SHORTCUTS = %w[0 - < min minimum least]
-  MAXIMUM_BET_SHORTCUTS = %w[00 + > max maximum most]
-  PREVIOUS_SHORTCUTS = %w[. = prev previous last]
+  MINIMUM_BET_SHORTCUTS = %w[0 - < min minimum least].freeze
+  MAXIMUM_BET_SHORTCUTS = %w[00 + > max maximum most].freeze
+  PREVIOUS_SHORTCUTS = %w[. = prev previous last].freeze
 
   class << self
-    attr_accessor :name, :money, :bet, :guess, :winnings, :wins,
-                  :rounds, :streak, :win_status, :elite_status, :items,
-                  :delays
+    attr_accessor :inventory, :delayed_inventory
 
-    def reset(name = "Saramir", money = 50)
-      @name = name
-      @money = money
-      
-      @winnings = 0
-      @guess = 'cho'
-      @bet = 1
+    def reset(name = 'Saramir', money = 50)
+      self.name = name
+      self.money = money
 
-      @wins = 0
-      @rounds = 0
+      self.winnings = 0
+      self.guess = 'cho'
+      self.bet = 1
 
-      @streak = '......'   
+      self.wins = 0
+      self.rounds = 0
 
-      @win_status = :none
-      @elite_status = false
+      self.streak = '......'
+
+      self.win_status = :none
+      self.elite_status = false
+
       type
 
-      self.items = []
-      self.delays = []
+      self.inventory = []
+      self.delayed_inventory = []
 
       self
     end
 
-    def predict 
+    def predict
       # NOTE: It's easier for verification and case handling to be done in
-      #       the actual gameplay loop instead of here, so any input that 
+      #       the actual gameplay loop instead of here, so any input that
       #       isn't parsed as a true guess is returned as a String array.
-      puts "What is your guess?"
+      puts 'What is your guess?'
 
-      raw_guess = gets.downcase.split(' ')
+      raw_guess = gets.downcase.split
 
       exit if QUIT.include? raw_guess[0]
       return if PREVIOUS_SHORTCUTS.include? raw_guess[0]
 
       if raw_guess.length > 1 && raw_guess[-1].start_with?('$')
-        raw_guess = process_single_line_play(raw_guess) 
+        raw_guess = process_single_line_play(raw_guess)
       end
 
       self.guess = GuessReader.format raw_guess
@@ -66,8 +65,6 @@ class HumanPlayer
     def wager
       return self.bet = bet.to_i if bet.is_a? String
 
-      previous_bet = bet || 1
-
       loop do
         puts "What is your bet? #{UI.convert_int_to_money(money)}"
 
@@ -75,16 +72,16 @@ class HumanPlayer
 
         return if PREVIOUS_SHORTCUTS.include? raw_bet
 
-        self.bet =  if MINIMUM_BET_SHORTCUTS.include? raw_bet
-                      Bank.minimum_bet
-                    elsif MAXIMUM_BET_SHORTCUTS.include? raw_bet
-                      [money, Bank.maximum_bet].min
-                    elsif raw_bet == 'back' || raw_bet == 'b'
-                      self.bet = :back
-                      break 
-                    else
-                      raw_bet.to_i
-                    end
+        self.bet = if MINIMUM_BET_SHORTCUTS.include? raw_bet
+                     Bank.minimum_bet
+                   elsif MAXIMUM_BET_SHORTCUTS.include? raw_bet
+                     [money, Bank.maximum_bet].min
+                   elsif ['back', 'b'].include?(raw_bet)
+                     self.bet = :back
+                     break
+                   else
+                     raw_bet.to_i
+                   end
 
         break if (Bank.minimum_bet..money).include? bet
       end
@@ -95,28 +92,24 @@ class HumanPlayer
       self.streak += ' <-'
     end
 
-    def type
-      GuessReader.infer_type guess
-    end
-
     def use(item)
-      return unless item.uses_left > 0
-      if item.kind_of?(Delay)
-        if @delays.include? item
-          puts "Already in use"
+      return unless item.uses_left.positive?
+
+      if item.type == :delayed_vision
+        if delayed_inventory.include? item
+          puts 'Already in use'
         else
-          @delays << item 
+          delayed_inventory << item
         end
+        puts "#{item.name} activated."
       else
         item.use
       end
     end
 
-    def use_delays
-      @delays.each do |item|
-        item.use
-      end
-      @delays.clear
+    def use_delayed_inventory
+      delayed_inventory.each(&:use)
+      delayed_inventory.clear
     end
   end
 end

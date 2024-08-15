@@ -31,10 +31,10 @@ class Scorer
                           end
     end
 
-    def match_over?(players)
-      clear_number = (SAFE_PERCENT * players.length).ceil
+    def match_over?
+      clear_number = (SAFE_PERCENT * Roster.all.length).ceil
 
-      players.count { |player| player.money >= par } >= clear_number
+      Roster.all.count { |player| player.money >= par } >= clear_number
     end
 
     def determine_elites(players)

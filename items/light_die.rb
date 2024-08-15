@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'swap_die'
+require_relative 'dice_modifier'
 
-class LightDie < SwapDie
+class LightDie < DiceModifier
 
-  NUMBERS = [1, 2, 3]
+  self.number = [1, 2, 3]
 
-  @name = 'Light Dice'
-  @description = 'A die with the numbers 1, 2 and 3.'
+  self.name = 'Light Die'
+  self.price_percent = 2.0
+  self.item_description = 'A die with the numbers 1, 2 & 3.'
 end

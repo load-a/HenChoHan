@@ -2,71 +2,35 @@
 require 'debug'
 require_relative 'item'
 
-class Vision < Item 
+class Vision < Item
 
-  LEVEL_DISTRIBUTION = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4]
+  LEVEL_DISTRIBUTION = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4].freeze
 
-  @@type = :vision
-  @@price_percent = 1.5
-
-  attr_accessor :name, :type, :price_percent, :level, :uses, :uses_left
-
-  def initialize(level = 1)
-    self.type = @@type
-    @description = ""
+  def initialize(level = LEVEL_DISTRIBUTION.sample)
+    super
+    self.name = 'vision'
+    self.type = :vision
     self.level = level
-    self.uses = level
-    self.uses_left = uses
+    self.price_percent = 1.5
+    self.item_description = 'An item that sees into the future.'
+    self.type_description = 'At higher levels: get more clues and more uses per match.'
   end
 
-  def price
-    @@price_percent * Scorer.par * level
-  end
-
-  def description
-    @description +
-    "\nAt higher levels: get more clues and more uses per match."
-  end
-
-  def reset
-    self.uses_left = uses
-  end
-
-  def roll_level
-    self.level = LEVEL_DISTRIBUTION.sample
-  end
-
-  def upgrade
-    self.level += 1
-    self.uses = level
-  end
-
-  def stats
-    {
-      name: name,
-      description: description,
-      price: price,
-      type: type,
-      level:level,
-      uses: uses,
-      uses_left: uses_left
-    }
-  end
 end
 
 class Coattails < Vision
   STATS = %i[
-    streak streak streak streak streak streak streak streak 
-    bet bet bet bet bet bet 
-    money money money 
-    guess 
-    name 
-  ]
+    streak streak streak streak streak streak streak streak
+    bet bet bet bet bet bet
+    money money money
+    guess
+    name
+  ].freeze
 
-  def initialize(level = 1)
-    super
-    self.name = "Coattails"
-    @description = "Reveal a clue about some winning player(s)."
+  def initialize
+    super()
+    self.name = 'Coattails'
+    self.item_description = 'Reveal a clue about some winning player(s).'
   end
 
   def use
@@ -76,8 +40,6 @@ class Coattails < Vision
       '%s: %s' % [attribute, player.send(attribute.to_s)]
     end
 
-    self.uses_left -= 1
-
     puts clues
 
     super
@@ -86,61 +48,78 @@ end
 
 class Foresight < Vision
   CLUES = %i[
-    state state state state state state state state state state 
+    state state state state state state state state state state
     difference
-    result_1 result_1 result_1 
-    result_2 result_2 result_2 
-    result 
-  ]
+    result_1 result_1 result_1
+    result_2 result_2 result_2
+    result
+  ].freeze
+
+  BEST_CLUE = '%<clue>s: %<reveal>s'
+  GOOD_CLUE = '...%<clue_excerpt>s... ...%<reveal_excerpt>s...'
+  OK_CLUE = '...%<reveal_excerpt>s...'
+  BAD_CLUE = '...%<scramble>s...'
 
   def initialize(level = 1)
     super
-    self.name = "Foresight"
-    @description = "Reveals a clue about the next result."
+    self.name = 'Foresight'
+    self.item_description = 'Reveals a clue about the next result.'
   end
 
   def use
     clues = CLUES.sample(level)
 
-    level.times do 
-      clue = clues.pop.to_s
-      reveal = Dealer.send(clue).to_s
+    level.times do
       accuracy = rand(0..10) + level
+      hint = generate_hint(clues)
 
-      case accuracy.clamp(1, 10)
-      when 10
-        puts "#{clue}: " + reveal
-      when 6..9
-        puts "..." + clue[rand(clue.length - 1)] + "... ..." + reveal[rand(reveal.length - 1)] + "..."
-      when 2..5
-        puts "..." + reveal[rand(reveal.length - 1)] + "..."
-      else
-        puts "..." + (clue.chars.shuffle + reveal.chars.shuffle).join('') + "..."
-      end
+      display_clue(accuracy, hint)
     end
+
     super
   end
 
-end
+  private
 
-class Delay < Vision
+  def display_clue(accuracy, hint)
+    case accuracy.clamp(1, 10)
+    when 10
+      puts BEST_CLUE % hint
+    when 6..9
+      puts GOOD_CLUE % hint
+    when 2..5
+      puts OK_CLUE % hint
+    else
+      puts BAD_CLUE % hint
+    end
+  end
 
-  def initialize(level = 1)
-    super
+  def generate_hint(clues)
+    clue = clues.pop.to_s
+    reveal = Dealer.send(clue).to_s
+    {
+      clue: clue,
+      reveal: reveal,
+      clue_excerpt: clue[rand(clue.length - 1)],
+      reveal_excerpt: reveal[rand(reveal.length - 1)],
+      scramble: (clue.chars.shuffle + reveal.chars.shuffle).join
+    }
   end
 end
 
-class Reroll < Delay
-  def initialize(level = 1)
-    super
-    self.name = "Reroll"
-    @description = "Rerolls the next throw if it doesn't land in your favor."
+class Reroll < Vision
+  def initialize
+    super()
+    self.name = 'Reroll'
+    self.type = :delayed_vision
+    self.item_description = "Rerolls the next throw if it doesn't land in your favor."
   end
 
   def use
     level.times do
       Scorer.determine_round_win(HumanPlayer)
-      break puts "human correct" if HumanPlayer.won?
+      break puts 'human correct' if HumanPlayer.won?
+
       puts "Rerolling a #{Dealer.result}"
       Dealer.reroll
     end

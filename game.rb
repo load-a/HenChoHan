@@ -4,21 +4,26 @@
 class Game
   @human = HumanPlayer
   @previous_round = ''
+  @break = false
 
   class << self
     attr_accessor :previous_round, :human
 
     def play_game
-      setup_new_game
-      npc_turn
-      player_turn
-      finish_round
-      determine_outcomes
+      loop do
+        npc_turn
+        player_turn
+        finish_round
+        determine_outcomes
+        break if @break
+      end
     end
 
-    def setup_new_game
+    def setup_game
       Roster.generate_list(Bank.starting_money)
     end
+
+    alias setup_new_game setup_game
 
     def npc_turn
       Roster.replace_eliminated_npcs
@@ -46,7 +51,7 @@ class Game
         break
       end
 
-      human.use_delays
+      human.use_delayed_inventory
     end
 
     def redirect_optional_inputs
@@ -72,36 +77,37 @@ class Game
 
     def manage_inventory
       show_inventory
+      return if human.inventory.empty?
+
       return unless UI.query 'Use an item?'
 
-      puts 'No uses left.' if human.items.none? { |item| item.uses_left.positive? }
+      puts 'No uses left.' if human.inventory.none? { |item| item.uses_left.positive? }
       select_inventory
     end
 
     def show_inventory
-      if human.items.empty?
+      if human.inventory.empty?
         puts 'No items.'
       else
-        puts Cheat.screen human.items
+        puts Inventory.screen human.inventory
       end
     end
 
     def select_inventory
-      if human.items.none? { |item| item.uses_left.positive? }
+      if human.inventory.none? { |item| item.uses_left.positive? }
         puts 'No items are usable.'
-      elsif human.items.one? { |item| item.uses_left.positive? }
-        human.items.find { |item| item.uses_left.positive? }.use
+      elsif human.inventory.one? { |item| item.uses_left.positive? }
+        human.inventory.find { |item| item.uses_left.positive? }.use
       else
-        selected_item = UI.menu_select(human.items, 'Which one?')
+        selected_item = UI.menu_select(human.inventory, 'Which one?')
         return if selected_item.nil?
+        return puts "#{selected_item.name} is out of uses." if selected_item.uses_left.zero?
 
         human.use selected_item
       end
     end
 
     def finish_round
-      human.use_delays
-
       Roster.all.each do |player|
         Scorer.determine_round_win(player)
       end
@@ -117,9 +123,9 @@ class Game
     end
 
     def determine_outcomes
-      return puts 'You lose.' if human.lost_match?
+      end_game if human.lost_match?
 
-      Scorer.match_over? Roster.all ? end_match : Dealer.next_round
+      Scorer.match_over? ? end_match : Dealer.next_round
     end
 
     def end_match
@@ -134,7 +140,7 @@ class Game
 
         setup_next_match
       else
-        puts "Didn't make Elite. Game Over."
+        end_game "You didn't make Elite."
       end
     end
 
@@ -155,9 +161,14 @@ class Game
         player.money = Bank.starting_money
       end
 
-      HumanPlayer.items.each do |item|
+      HumanPlayer.inventory.each do |item|
         item.reset if item.respond_to? 'reset'
       end
+    end
+
+    def end_game(message = 'You ran out of money.')
+      puts message, 'You lose.'
+      @break = true
     end
   end
 end

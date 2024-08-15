@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'swap_die'
+require_relative 'dice_modifier'
 
-class OddDie < SwapDie
+class OddDie < DiceModifier
 
-  NUMBERS = [1, 3, 5]
+  self.number = [1, 3, 5]
 
-  @name = 'Odd Dice'
-  @description = 'A die with only odd numbers.'
+  self.name = 'Odd Die'
+  self.price_percent = 2.0
+  self.item_description = 'A die with only odd numbers.'
 end

@@ -33,7 +33,7 @@ class Shop
       elsif selection.price > HumanPlayer.money
         puts 'Cannot afford item.'
       else
-        HumanPlayer.items << selection
+        HumanPlayer.inventory << selection
         puts "Purchased #{selection.name}"
 
         case selection.type
