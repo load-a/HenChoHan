@@ -27,6 +27,7 @@ class Dealer
     def roll
       @result = [@die_1.sample, @die_2.sample]
     end
+
     alias reroll roll
 
     def result_1

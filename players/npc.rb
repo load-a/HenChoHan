@@ -4,12 +4,11 @@ require_relative 'player'
 require_relative 'npc_behavior'
 require_relative '../constants'
 
-class NPC
-  include PlayerState
-  include PlayerActions
+class NPC < Player
   include NPCBehavior
 
   def initialize(name, money = 50)
+    super()
     self.name = name
     self.money = money
     self.winnings = 0
@@ -30,13 +29,13 @@ class NPC
   def predict
     self.guess = GuessReader.format case guess_style.sample
                                     when :normal
-                                      (EVEN + ODD).sample
+                                      (Input::EVEN + Input::ODD).sample
                                     when :one_die
                                       rand(1..6).to_s
                                     when :both_dice
-                                      [DIE.sample, DIE.sample]
+                                      [Input::DIE.sample, Input::DIE.sample]
                                     when :difference
-                                      DIFFERENCE.sample
+                                      Input::DIFFERENCE.sample
                                     end
   end
 

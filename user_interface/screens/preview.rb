@@ -20,7 +20,7 @@ class RoundPreview < Screen
         name: player.name,
         guess: player.guess,
         type: player.type,
-        bet: UI.convert_int_to_money(player.bet),
+        bet: UserInterface.convert_integer_to_money(player.bet),
         streak: player.streak
       }
     end
@@ -36,7 +36,7 @@ class RoundPreview < Screen
         'Evens: $%<evens>i  Odds: $%<odds>i  Others: $%<others>i' % Bank.spread,
         ''
       ].map do |string|
-        line = Rainbow( string.center(LENGTH) )
+        line = Rainbow(string.center(LENGTH))
         line.bold
       end
     end
@@ -50,11 +50,11 @@ class RoundPreview < Screen
 
     def screen(players)
       header +
-      [Rainbow(LEGEND).underline.italic] +
-      players.map do |player|
-        player_line(player)
-      end + 
-      [('E:%i, O:%i, #:%i, ##:%i, -#:%i' % Roster.groups.values.map(&:length)).center(LENGTH)]
+        [Rainbow(LEGEND).underline.italic] +
+        players.map do |player|
+          player_line(player)
+        end +
+        [('E:%i, O:%i, #:%i, ##:%i, -#:%i' % Roster.groups.values.map(&:length)).center(LENGTH)]
     end
   end
 end

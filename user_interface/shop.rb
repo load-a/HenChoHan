@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
-class Shop
+Dir.entries('items').each do |item|
+  require_relative "../items/#{item}" unless %w[. ..].include?(item)
+end
+
+class Store
   ITEMS = [
     EvenDie, OddDie, HeavyDie, LightDie, Weight.new,
     Coattails.new, Foresight.new, Reroll.new
@@ -26,10 +30,10 @@ class Shop
 
   def purchase
     loop do
-      selection = UI.menu_select(stock, "Buy one item ($#{HumanPlayer.money})")
+      selection = Input.menu_select(stock, "Buy one item ($#{HumanPlayer.money})")
 
       if selection.nil?
-        break puts 'Shop skipped.' if UI.query 'Skip Shop?'
+        break puts 'Shop skipped.' if Input.query 'Skip Shop?'
       elsif selection.price > HumanPlayer.money
         puts 'Cannot afford item.'
       else
@@ -38,10 +42,11 @@ class Shop
 
         case selection.type
         when :swap_die
-          break unless UI.query 'Use now?'
+          break unless Input.query 'Use now?'
+
           selection.use
         when :vision
-          #use later
+          # use later
         end
 
         break

@@ -24,9 +24,9 @@ class RoundSummary < Screen
         name: player.name,
         guess: player.guess,
         type: player.type,
-        bet: UI.convert_int_to_money(player.bet),
-        winnings: UI.convert_int_to_money(player.winnings),
-        money: UI.convert_int_to_money(player.money),
+        bet: UserInterface.convert_integer_to_money(player.bet),
+        winnings: UserInterface.convert_integer_to_money(player.winnings),
+        money: UserInterface.convert_integer_to_money(player.money),
         wins: player.wins,
         rounds: player.rounds,
         streak: player.streak
@@ -43,7 +43,7 @@ class RoundSummary < Screen
         'Par: $%i' % Scorer.par,
         ''
       ].map do |string|
-        line = Rainbow( string.center(LENGTH) )
+        line = Rainbow(string.center(LENGTH))
         line.bold
       end
     end
@@ -56,24 +56,24 @@ class RoundSummary < Screen
       index = 0
 
       header +
-      [Rainbow(LEGEND).underline.italic] +
-      players.map do |player|
-        index += 1
+        [Rainbow(LEGEND).underline.italic] +
+        players.map do |player|
+          index += 1
 
-        line = Rainbow(player_line(player))
+          line = Rainbow(player_line(player))
 
-        line = line.bright if player.won?
+          line = line.bright if player.won?
 
-        line = line.faint if player.lost_match?
+          line = line.faint if player.lost_match?
 
-        if player == HumanPlayer
-          line =  player.made_money? ? line.green : line.red
+          if player == HumanPlayer
+            line = player.made_money? ? line.green : line.red
+          end
+
+          line = line.underline if index == Scorer.elite_index
+
+          index == players.length ? line.underline : line
         end
-
-        line = line.underline if index == Scorer.elite_index
-        
-        index == players.length ? line.underline : line
-      end
     end
   end
 end

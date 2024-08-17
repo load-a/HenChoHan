@@ -3,7 +3,7 @@
 require_relative 'player'
 require_relative '../constants'
 
-class HumanPlayer
+class HumanPlayer < Player
   extend PlayerActions
   extend PlayerState
 
@@ -46,7 +46,7 @@ class HumanPlayer
 
       raw_guess = gets.downcase.split
 
-      exit if QUIT.include? raw_guess[0]
+      exit if Input::QUIT.include? raw_guess[0]
       return if PREVIOUS_SHORTCUTS.include? raw_guess[0]
 
       if raw_guess.length > 1 && raw_guess[-1].start_with?('$')
@@ -66,7 +66,7 @@ class HumanPlayer
       return self.bet = bet.to_i if bet.is_a? String
 
       loop do
-        puts "What is your bet? #{UI.convert_int_to_money(money)}"
+        puts "What is your bet? #{UserInterface.convert_integer_to_money(money)}"
 
         raw_bet = gets.chomp
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'constants'
-require_relative 'guess_reader'
+require_relative '../user_interface/guess_reader'
 
 module PlayerState
   attr_accessor :name, :money, :bet, :guess, :winnings, :wins,
@@ -62,5 +62,10 @@ module PlayerActions
 
     self.win_status = :eliminated if money < 1
   end
+end
+
+class Player
+  include PlayerActions
+  include PlayerState
 end
 

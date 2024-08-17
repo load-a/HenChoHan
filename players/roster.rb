@@ -18,7 +18,7 @@ module PlayerGenerator
 
   def replace_eliminated_npcs(money = 50)
     npcs.map! do |npc|
-      npc.lost_match? ? NPC.new(available_names.sample, money) : npc 
+      npc.lost_match? ? NPC.new(available_names.sample, money) : npc
     end
   end
 
@@ -58,48 +58,48 @@ module PlayerGroups
     end
   end
 
-  def odds
-    all.select do |player|
+  def not_odds
+    all.reject do |player|
       player.type == :odd
     end
   end
 
   def not_evens
-    all.select do |player|
-      player.type != :even
+    all.reject do |player|
+      player.type == :even
     end
   end
 
   def not_singles
-    all.select do |player|
-      player.type != :one_die
+    all.reject do |player|
+      player.type == :one_die
     end
   end
 
   def not_doubles
-    all.select do |player|
-      player.type != :both_dice
+    all.reject do |player|
+      player.type == :both_dice
     end
   end
 
   def not_differences
-    all.select do |player|
-      player.type != :difference
+    all.reject do |player|
+      player.type == :difference
     end
   end
 
   def others
-    [singles, doubles, differences]
+    singles + doubles + differences
   end
 
   def normals
-    [evens, odds]
+    evens + odds
   end
 
   def winners
     all.select do |player|
       player.is_a?(NPC) &&
-      player.win_status == :round
+        player.win_status == :round
     end
   end
 

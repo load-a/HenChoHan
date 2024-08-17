@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Names have a 15 character limit
-SPECIAL_NAMES = %w[  
+SPECIAL_NAMES = %w[
   Alyssa
   Haramatsu
   Kori
@@ -13,18 +13,18 @@ SPECIAL_NAMES = %w[
   JJ
   Rae
   Mel
-]
+].freeze
 
 MULTI_WORD_NAMES = [
-  "Big G",
-  "Real Eyes",
-  "Real Lies",
-  "Old Mack",
-  "New Mack",
-  "Mr. Maxwell Out",
-  "Trips Tanaka",
-  "Choco Giddy-up"
-]
+  'Big G',
+  'Real Eyes',
+  'Real Lies',
+  'Old Mack',
+  'New Mack',
+  'Mr. Maxwell Out',
+  'Trips Tanaka',
+  'Choco Giddy-up'
+].freeze
 
 NPC_NAMES = %w[
   Ainsley

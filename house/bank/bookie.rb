@@ -3,28 +3,27 @@
 module Bookie
 
   ONE_DIE_BONUS = 1.3
-  SPECIAL_TYPES = %i[both_dice difference one_die]
+  SPECIAL_TYPES = %i[both_dice difference one_die].freeze
   DIFFERENCE_PAYOUT = {
-    :"0" => 6,
-    :"-1" => 3,
-    :"-2" => 4,
-    :"-3" => 6,
-    :"-4" => 9,
-    :"-5" => 18,
-  }
+    "0": 6,
+    "-1": 3,
+    "-2": 4,
+    "-3": 6,
+    "-4": 9,
+    "-5": 18
+  }.freeze
 
   private
 
   def build_pot(players)
+    self.pot = 0
+    self.shares = 0
+    
     players.each do |player|
-      begin
       if player.won?
         self.shares += 1 unless SPECIAL_TYPES.include? player.type
       else
         self.pot += player.bet
-      end
-      rescue
-        puts '%s: $%s' % [player.name, player.bet]
       end
     end
   end
@@ -34,7 +33,7 @@ module Bookie
     when :both_dice
       total_pot
     when :one_die
-      player.bet + (standard_cut * ONE_DIE_BONUS).ceil 
+      player.bet + (standard_cut * ONE_DIE_BONUS).ceil
     when :difference
       player.bet * DIFFERENCE_PAYOUT[player.guess.to_s.to_sym]
     else
@@ -61,13 +60,13 @@ module Bookie
 
   def spread
     {
-      evens: Roster.evens.map(&:bet).sum, 
-      odds: Roster.odds.map(&:bet).sum, 
-      singles: Roster.singles.map(&:bet).sum, 
-      doubles: Roster.doubles.map(&:bet).sum, 
-      differences: Roster.differences.map(&:bet).sum, 
-      normals: Roster.normals.map { |type| type.map(&:bet).sum }.sum,
-      others: Roster.others.map { |type| type.map(&:bet).sum }.sum
+      evens: Roster.evens.map(&:bet).sum,
+      odds: Roster.odds.map(&:bet).sum,
+      singles: Roster.singles.map(&:bet).sum,
+      doubles: Roster.doubles.map(&:bet).sum,
+      differences: Roster.differences.map(&:bet).sum,
+      normals: Roster.normals.map(&:bet).sum,
+      others: Roster.others.map(&:bet).sum
     }
   end
 
@@ -76,7 +75,7 @@ module Bookie
   end
 
   def standard_cut
-    shares = 1 if shares&.zero? || shares.nil?
+    self.shares = 1 if shares&.zero? || shares.nil?
     pot / shares
   end
 
