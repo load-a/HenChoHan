@@ -8,7 +8,7 @@ module EndingPlay
     puts 'Match Over!'
 
     Roster.all.each do |player|
-      Scorer.determine_match_win player
+      Scorer.assign_match_win player
     end
 
     if human.won_match?

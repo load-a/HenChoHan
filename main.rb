@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'constants'
+require_relative 'class_extentions'
 require_relative 'librarian'
 
 require_relative 'house/dealer/dealer'
@@ -15,7 +15,7 @@ Librarian.require_directory('./items')
 
 require_relative 'game'
 
-UserInterface.blank_feed
+# UserInterface.blank_feed
 Game.setup_game # This is disconnected from #play_game to allow for roster changes during development.
 # HumanPlayer.inventory += [Coattails.new, Foresight.new, Reroll.new]
 Game.play_game

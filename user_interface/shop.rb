@@ -46,7 +46,16 @@ class Store
 
           selection.use
         when :vision
-          # use later
+          if HumanPlayer.inventory.include? selection.class
+            current = HumanPlayer.inventory.find { |effect| effect.name == selection.name }
+            if current.level >= selection.level
+              current.upgrade
+            else
+              current.level = selection.level
+            end
+            
+            puts "Upgraded #{current.name}"
+          end
         end
 
         break

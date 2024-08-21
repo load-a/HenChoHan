@@ -2,7 +2,7 @@
 
 require_relative 'player'
 require_relative 'npc_behavior'
-require_relative '../constants'
+require_relative '../class_extentions'
 
 class NPC < Player
   include NPCBehavior
@@ -27,16 +27,21 @@ class NPC < Player
   end
 
   def predict
-    self.guess = GuessReader.format case guess_style.sample
-                                    when :normal
-                                      (Input::EVEN + Input::ODD).sample
-                                    when :one_die
-                                      rand(1..6).to_s
-                                    when :both_dice
-                                      [Input::DIE.sample, Input::DIE.sample]
-                                    when :difference
-                                      Input::DIFFERENCE.sample
-                                    end
+    prediction = case guess_style.sample
+                 when :normal
+                   (EVEN + ODD).sample
+                 when :one_die
+                   rand(1..6).to_s
+                 when :both_dice
+                   "#{DIE.sample} #{DIE.sample}"
+                 when :difference
+                   DIFFERENCE.sample
+                 end
+
+    guess_output = Input.evaluate_guess(prediction)
+
+    self.guess = guess_output[:guess]
+    self.type = guess_output[:type]
   end
 
   def wager

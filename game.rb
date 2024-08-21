@@ -3,7 +3,7 @@
 require_relative 'ending_play'
 require_relative 'other_screens'
 require_relative 'finishing_round'
-require_relative 'user_interface/input'
+require_relative 'user_interface/input/input'
 
 # The main gameplay object.
 class Game
@@ -56,7 +56,7 @@ class Game
       loop do
         human.predict
         redirect_optional_inputs
-        next unless GuessReader.valid? human.guess
+        next unless Input.valid_guess? human.guess
 
         human.wager
         next if human.bet == :back

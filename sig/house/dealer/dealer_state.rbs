@@ -1,0 +1,13 @@
+module DealerState
+  def even?: () -> bool
+
+  def odd?: () -> bool
+
+  def state: () -> (:even | :odd)
+
+  def difference: () -> Integer
+
+  def correct_guesses: () -> ::Array[Integer | Symbol | Array[Integer]]
+
+  def first_round?: () -> bool
+end

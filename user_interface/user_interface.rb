@@ -24,16 +24,11 @@ module IntegerStringFormatting
 
   def get_magnitude(integer)
     case integer.abs
-    when 0...1_000
-      ''
-    when 1_000...1_000_000
-      'k'
-    when 1_000_000...1_000_000_000
-      'm'
-    when 1_000_000_000...1_000_000_000_000
-      'b'
-    when 1_000_000_000...1_000_000_000_000_000
-      't'
+    when 0...1_000 then ''
+    when 1_000...1_000_000 then 'k'
+    when 1_000_000...1_000_000_000 then 'm'
+    when 1_000_000_000...1_000_000_000_000 then 'b'
+    when 1_000_000_000...1_000_000_000_000_000 then 't'
     else
       'x'
     end

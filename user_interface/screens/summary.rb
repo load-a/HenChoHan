@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class RoundSummary < Screen
-
   TEMPLATE = '%-15<name>s %6<guess>s %-11<type>s %-9<bet>s %9<winnings>s %9<money>s %4<wins>s/%-4<rounds>s %<streak>s'
   KEY = {
     name: 'Name',
@@ -12,13 +11,13 @@ class RoundSummary < Screen
     money: 'Money',
     wins: 'Wins',
     rounds: 'Rnds',
-    streak: 'Streak',
-  }
+    streak: 'Streak'
+
+  }.freeze
   LEGEND = TEMPLATE % KEY
-  LENGTH = (LEGEND).length
+  LENGTH = LEGEND.length
 
   class << self
-
     def player_info(player)
       {
         name: player.name,
@@ -38,8 +37,8 @@ class RoundSummary < Screen
         '-- Match %i --' % Dealer.match,
         ' - Round %i -' % Dealer.round,
         '[%i] [%i]' % Dealer.result,
-        '%s (-%i)' % [Dealer.state, Dealer.difference],
-        'Min: %i - Max: %i' % [Bank.minimum_bet, Bank.maximum_bet],
+        format('%s (-%i)', Dealer.state, Dealer.difference),
+        format('Min: %i - Max: %i', Bank.minimum_bet, Bank.maximum_bet),
         'Par: $%i' % Scorer.par,
         ''
       ].map do |string|
@@ -70,7 +69,7 @@ class RoundSummary < Screen
             line = player.made_money? ? line.green : line.red
           end
 
-          line = line.underline if index == Scorer.elite_index
+          line = line.underline if index == Roster.elites.length
 
           index == players.length ? line.underline : line
         end

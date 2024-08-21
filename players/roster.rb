@@ -28,6 +28,12 @@ module PlayerGenerator
 end
 
 module PlayerGroups
+  def elites
+    all.select do |player|
+      player.elite_status == true
+    end
+  end
+
   def odds
     all.select do |player|
       player.type == :odd

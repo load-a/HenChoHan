@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
 require_relative 'constants'
-require_relative '../user_interface/guess_reader'
+require_relative '../user_interface/input/guess_reader'
 
 module PlayerState
-  attr_accessor :name, :money, :bet, :guess, :winnings, :wins,
+  attr_accessor :name, :money, :bet, :guess, :type, :winnings, :wins,
                 :rounds, :streak, :win_status, :elite_status
-
-  def type
-    GuessReader.infer_type guess
-  end
 
   def won_game?
     win_status == :game
@@ -68,4 +64,3 @@ class Player
   include PlayerActions
   include PlayerState
 end
-

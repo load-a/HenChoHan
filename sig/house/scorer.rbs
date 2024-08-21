@@ -1,0 +1,28 @@
+# Scores the game, sets pars and determines when a match is over.
+class Scorer
+  self.@par: untyped
+
+  SAFE_PERCENT: ::Float
+
+  PROGRESSION_TABLE: ::Array[100 | 750 | 2000 | 8000 | 40000 | 100000 | 250000]
+
+  attr_accessor self.par: untyped
+
+  # Compares the player's guess or type to the Dealer's .correct_guess
+  #   and the player's @win_status accordingly.
+  # @param player [Player, Class<HumanPlayer>]
+  # @return [Void]
+  def self.determine_round_win: (Object player) -> void
+
+  # Sets the player's win_status.
+  # @note Only to be used when match is over.
+  # @return [Void]
+  def self.assign_match_win: (untyped player) -> untyped
+
+  # Compares the number of players with Elite status to the clear_number.
+  # Returns true when the clear_number is matched or exceeded.
+  # @return [Boolean]
+  def self.match_over?: () -> untyped
+
+  def self.assign_elites: (untyped players) -> untyped
+end

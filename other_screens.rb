@@ -18,7 +18,7 @@ module OtherScreens
     when 'd', 'dealer'
       puts DealerStatus.screen
     when 'm', 'me'
-      puts '%s: %s %s' % [human.name, UserInterface.convert_integer_to_money(human.money), human.streak]
+      puts format('%s: %s %s', human.name, UserInterface.convert_integer_to_money(human.money), human.streak)
     end
   end
 

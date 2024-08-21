@@ -1,0 +1,17 @@
+module IntegerStringFormatting
+  # @todo This method is a mess.
+  def convert_integer_to_money: (String integer_string) -> String
+
+  def get_magnitude: (Integer integer) -> String
+end
+
+# Handle text and screen elements
+module UserInterface
+  extend IntegerStringFormatting
+
+  def self?.clear_screen: () -> void
+
+  def self?.blank_feed: () -> void
+
+  def self?.divider: (?::Integer length, ?::String character) -> String
+end

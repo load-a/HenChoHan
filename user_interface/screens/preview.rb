@@ -1,20 +1,18 @@
 # frozen_string_literal: true
 
 class RoundPreview < Screen
-
   TEMPLATE = '%-15<name>s %6<guess>s %-11<type>s %9<bet>s %<streak>s'
   KEY = {
     name: 'Name',
     guess: 'Guess',
     type: 'Type',
     bet: 'Bet',
-    streak: 'Streak',
+    streak: 'Streak'
   }
   LEGEND = TEMPLATE % KEY
-  LENGTH = (LEGEND).length
+  LENGTH = LEGEND.length
 
   class << self
-
     def player_info(player)
       {
         name: player.name,
@@ -30,7 +28,7 @@ class RoundPreview < Screen
         '-- Match %i --' % Dealer.match,
         ' - Round %i -' % Dealer.round,
         'Betting Range',
-        ' $%i -- $%i' % [Bank.minimum_bet, Bank.maximum_bet],
+        format(' $%i -- $%i', Bank.minimum_bet, Bank.maximum_bet),
         'Par: $%i' % Scorer.par,
         'Pot: $%i' % Bank.total_pot,
         'Evens: $%<evens>i  Odds: $%<odds>i  Others: $%<others>i' % Bank.spread,

@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
 module Bookie
-
   ONE_DIE_BONUS = 1.3
   SPECIAL_TYPES = %i[both_dice difference one_die].freeze
   DIFFERENCE_PAYOUT = {
-    "0": 6,
-    "-1": 3,
-    "-2": 4,
-    "-3": 6,
-    "-4": 9,
-    "-5": 18
+    '0': 6,
+    '-1': 3,
+    '-2': 4,
+    '-3': 6,
+    '-4': 9,
+    '-5': 18
   }.freeze
 
   private
@@ -18,7 +17,7 @@ module Bookie
   def build_pot(players)
     self.pot = 0
     self.shares = 0
-    
+
     players.each do |player|
       if player.won?
         self.shares += 1 unless SPECIAL_TYPES.include? player.type
@@ -80,8 +79,8 @@ module Bookie
   end
 
   def hypothetical_earnings(player)
-    evens = player.bet + spread[:odds] / [Roster.evens.length, 1].max
-    odds = player.bet + spread[:evens] / [Roster.odds.length, 1].max
+    evens = player.bet + (spread[:odds] / [Roster.evens.length, 1].max)
+    odds = player.bet + (spread[:evens] / [Roster.odds.length, 1].max)
 
     case player.type
     when :even

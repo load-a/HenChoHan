@@ -1,0 +1,148 @@
+module InputConstants
+  QUIT: ::Array["q" | "quit" | "stop" | "done" | "exit" | "end" | "fin" | "finish" | "yamete"]
+
+  ANSWER: { affirmative: ::Array["1" | "y" | "yes" | "hai" | "sou" | "indeed" | "ok" | "sure" | "yeah" | "yea" | "si" | "fine"], negative: ::Array["0" | "n" | "no" | "nai" | "chigau" | "iie" | "nah" | "nope"] }
+
+  BACK: ::Array["back" | "b" | "return" | "undo"]
+
+  OPTION: { item: ::Array["i" | "item" | "items" | "inventory" | "use" | "u"], information: ::Array["s" | "status" | "stats" | "see" | "me" | "m" | "r" | "rules" | "d" | "dealer"] }
+
+  EVEN: ::Array["c" | "cho" | "e" | "even"]
+
+  ODD: ::Array["h" | "han" | "o" | "odd"]
+
+  DIE: ::Array["1" | "2" | "3" | "4" | "5" | "6"]
+
+  SUM: ::Array["2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12"]
+
+  DIFFERENCE: ::Array["0" | "-1" | "-2" | "-3" | "-4" | "-5"]
+
+  NORMAL: Array[String]
+
+  SPECIAL: Array[String]
+
+  PLAY: { normal: Array[String], special: Array[String], even: Array[String], odd: Array[String], die: Array[String], sum: Array[String], difference: Array[String] }
+end
+
+# Gets, processes and remembers user input.
+class Input
+  self.@answer: String | Integer | Array[Integer]
+
+  extend InputConstants
+
+  @answer: String | Integer | Array[Integer]
+
+  attr_reader self.answer: untyped
+  attr_reader self.answer: String | Integer | Array[Integer]
+
+  # Prompts the user for input. 
+  # Calls the block on said input and, optionally, Input's state (input_tag).
+  # This method will keep the user in a loop until they exit the game or 
+  # the block returns a truthy value.
+  #   Input.await_valid_input("Please enter a normal play.") { |input, tag|
+  #     case tag
+  #     when :affirmative
+  #       puts "Do it then."
+  #     when :negative
+  #       puts "Yes."
+  #     when :normal
+  #       puts "Thank you."
+  #       true
+  #     else
+  #       puts "This is not a normal play."
+  #     end
+  #   }
+  #
+  #  # => Please enter a normal play.
+  #  # => $ no
+  #  # => Yes.
+  #  # => Please enter a normal play.
+  #  # => $ fine
+  #  # => Do it then.
+  #  # => Please enter a normal play.
+  #  # => $ -3
+  #  # => This is not a normal play.
+  #  # => Please enter a normal play.
+  #  # => $ cho
+  #  # => Thank you.
+  # @yieldparam input [String] The value of @answer
+  # @yieldparam tag [Symbol] The value of .input_tag
+  # @yieldparam self [Class] The value of .input_tag
+  # @return [Void]
+  def self.await_valid_input: (String prompt) { (String, Symbol, Class) -> bool } -> void
+
+  def self.menu_select: (Array[Object | Class] options, ?::String prompt) -> Object
+
+  # Asks a yes or no question.
+  # @return [Boolean]
+  def self.query: (?::String question) -> bool
+
+  # Delays gameplay until user presses Enter.
+  # @return [Void]
+  def self.continue: (?::String prompt) -> void
+
+  # Attempts to exit the game. Asks for confirmation beforehand.
+  # @return [Void]
+  def self.exit_on_quit: () -> void
+
+  # Asks the for input and returns a tag.
+  # @param prompt [String] What you want the program to ask.
+  # @return [Symbol]
+  def self.read: (?::String prompt) -> Symbol
+
+  # Asks (or waits) for input.
+  # @note This is intended to only be used as a void method. 
+  # @return [Void<String>] A processed version of the input it received.
+  def self.ask: (String prompt) -> void
+
+  # Receives input, processes it, then assigns it to @answer.
+  # @note This is intended to only be used as a void method. 
+  #   Its main purpose is to assign a value to @answer.
+  #   It does return a String, however.
+  # @return [Void<String>]
+  def self.get: () -> void
+
+  # Analyzes @answer and returns its type.
+  # @return [Symbol]
+  def self.input_tag: () -> Symbol
+
+  # Determines what type of Option @answer is.
+  # @return [Symbol]
+  def self.option_type: () -> Symbol
+
+  # Determines what type of Answer @answer is.
+  # @return [Symbol]
+  def self.answer_type: () -> Symbol
+
+  # Determines what type of Play Command @answer is.
+  # @return [Symbol]
+  def self.play_type: () -> Symbol
+
+  # Determines if @answer is a Quit Command.
+  # @return [Boolean]
+  def self.quit?: () -> bool
+
+  # Determines if @answer is a Quit Command.
+  # @return [Boolean]
+  def self.back?: () -> bool
+
+  # Determines if @answer is a Quit Command.
+  # @return [Boolean]
+  def self.answer?: () -> bool
+
+  # Determines if @answer is a Quit Command.
+  # @return [Boolean]
+  def self.option?: () -> bool
+
+  # Determines if @answer is a Play Command (or Numeric for betting and menu selection).
+  # @return [Boolean]
+  def self.play?: () -> bool
+
+  # Determines if @answer is a Yes Answer.
+  # @return [Boolean]
+  def self.yes?: () -> bool
+
+  # Determines if @answer is a No Answer.
+  # @return [Boolean]
+  def self.no?: () -> bool
+end

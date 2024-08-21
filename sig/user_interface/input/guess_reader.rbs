@@ -1,0 +1,21 @@
+# Handles player guesses (see HumanPlayer.predict) specifically.
+module GuessReader
+  def human_guess: () -> (String | { guess: Array[Array[Integer] | Symbol | Integer | String], type: Symbol, valid: bool })
+
+  def evaluate_guess: (String guess) -> { guess: Array[Array[Integer] | Symbol | Integer | String], type: Symbol, valid: bool }
+
+  private
+
+  # @return [Symbol]
+  def infer_guess_type: ((Array[Array[Integer] | Symbol | Integer | String] | :none) guess) -> (:both_dice | (:odd | :even) | :difference | :one_die | :none)
+
+  # Converts a guess string into the appropriate data type.
+  # @return [Array<Integer, Integer>, Symbol, Integer, String]
+  def format_guess: (String guess) -> (Array[Array[Integer] | Symbol | Integer | String] | :none)
+
+  # Checks if the guess is of a valid type and value.
+  def valid?: (Array[Array[Integer] | Symbol | Integer | String] guess) -> bool
+
+  # Returns the appropriate symbol for the guess.
+  def guess_odd_or_even?: (String guess) -> (:even | :odd | :none)
+end

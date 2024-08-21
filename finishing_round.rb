@@ -8,7 +8,7 @@ module FinishingRound
 
     Roster.conclude_round
 
-    Scorer.determine_elites Roster.all
+    Scorer.assign_elites Roster.all
 
     self.previous_round = RoundSummary.screen(Roster.all.sort_by(&:money).reverse)
     summarize_round
