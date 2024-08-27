@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-Dir.entries('items').each do |item|
-  require_relative "../items/#{item}" unless %w[. ..].include?(item)
-end
-
 class Store
   ITEMS = [
     EvenDie, OddDie, HeavyDie, LightDie, Weight.new,
@@ -53,7 +49,7 @@ class Store
             else
               current.level = selection.level
             end
-            
+
             puts "Upgraded #{current.name}"
           end
         end

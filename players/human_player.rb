@@ -16,7 +16,7 @@ class HumanPlayer < Player
     #   @return [Array<Item, Effect>]
     # @!attribute delayed_inventory
     #   @return [Array<Item, Effect>]
-    attr_accessor :inventory, :delayed_inventory
+    attr_accessor :inventory, :delayed_inventory, :final_inventory
 
     # @return [Class<HumanPlayer>]
     def reset(name = 'Saramir', money = 50)
@@ -37,6 +37,7 @@ class HumanPlayer < Player
 
       self.inventory = []
       self.delayed_inventory = []
+      self.final_inventory = []
 
       self
     end
@@ -99,11 +100,18 @@ class HumanPlayer < Player
     def use(item)
       return unless item.uses_left.positive?
 
-      if item.type == :delayed_vision
+      if %i[delayed_vision delayed_item].include? item.type
         if delayed_inventory.include? item
           puts 'Already in use'
         else
           delayed_inventory << item
+        end
+        puts "#{item.name} activated."
+      elsif item.type == :final_item
+        if final_inventory.include? item
+          puts 'Already in use'
+        else
+          final_inventory << item
         end
         puts "#{item.name} activated."
       else
@@ -114,6 +122,11 @@ class HumanPlayer < Player
     def use_delayed_inventory
       delayed_inventory.each(&:use)
       delayed_inventory.clear
+    end
+
+    def use_final_inventory
+      final_inventory.each(&:use)
+      final_inventory.clear
     end
   end
 end

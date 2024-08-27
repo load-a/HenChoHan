@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'item_function'
+require_relative '../item_function'
 require_relative 'dice_swapper'
-require_relative 'Effect'
+require_relative '../Effect'
 
 class DiceModifier < Effect
   extend ItemFunction

@@ -4,7 +4,7 @@ module FinishingRound
 
     Bank.settle_up Roster.all
 
-    challenge_the_house if human.streak[1..] == '+++++' && human.won?
+    human.use_final_inventory
 
     Roster.conclude_round
 
@@ -32,24 +32,35 @@ module FinishingRound
       break puts 'Congratulations!' if limit.zero?
 
       Dealer.roll
-      human.predict
 
-      unless Input::NORMAL.include? human.guess
-        break if Input.query 'Do you want to end the challenge?'
-
-        next
+      Input.await_valid_input 'Odd or Even?' do |_answer, _type, this|
+        if this.back? || this.no?
+          Input.query 'End the challenge?'
+          break if this.yes?
+        end
+        Input.type == :normal
       end
+
+      if Input.yes?
+        human.money += human.winnings
+        human.streak = '......'
+        puts 'Nice job!'
+        break
+      end
+
+      HumanPlayer.guess = Input.answer
 
       Scorer.determine_round_win(human)
 
       if human.won?
-        puts "Your winnings double! (#{UserInterface.convert_integer_to_money(human.winnings)})"
         human.winnings *= 2
+        puts "Your winnings double! (#{UserInterface.convert_integer_to_money(human.winnings)})"
         limit -= 1
-        break puts 'Good run!' unless Input.query('Do you want to continue?')
       else
+        puts 'You lost all your winnings.'
+        human.streak = '......'
         human.winnings = 0
-        break puts 'You lost all your winnings.'
+        break
       end
     end
   end

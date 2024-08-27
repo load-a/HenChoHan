@@ -15,7 +15,8 @@ module Librarian
   # @param ignore [Array<String>] A list of all the files you want ignored.
   # 	The full file path (starting with './') must be specified.
   # @return [Void]
-  def require_directory(directory = '.', ignore: %w[main.rb librarian.rb])
+  def require_directory(directory = '.', ignore: %w[main.rb librarian.rb], load_first: '')
+    require load_first if load_first != ''
     dredge_directory(directory).reject { |file| ignore.include? file }
                                .each { |file| require file }
   end

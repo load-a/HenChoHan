@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'dice_modifier'
-require_relative 'item'
 
 class EvenDie < DiceModifier
-
   self.number = [2, 4, 6]
 
   self.name = 'Even Die'

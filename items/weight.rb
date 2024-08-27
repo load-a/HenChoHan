@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'dice_swapper.rb'
+require_relative 'dice/dice_swapper'
 require_relative 'item'
 
 class Weight < Item
@@ -10,7 +10,7 @@ class Weight < Item
     super(level)
     self.name = 'Weight'
     self.type = :weight
-    self.number = number
+    self.number = Array.new(level, number)
     self.item_description = "Increases the likelihood of rolling a #{number}."
     self.type_description = 'Higher levels increase the odds.'
     self.price_percent = 1.0

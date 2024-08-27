@@ -13,12 +13,14 @@ module OtherScreens
       preview_round
     when 'r', 'rules'
       system 'cat user_interface/rules.txt'
-    when 'p', 'previous'
+    when 'p', 'previous', 'last', 'l'
       puts previous_round unless Dealer.start_of_game?
     when 'd', 'dealer'
       puts DealerStatus.screen
     when 'm', 'me'
-      puts format('%s: %s %s', human.name, UserInterface.convert_integer_to_money(human.money), human.streak)
+      print "\nYour Stats: "
+      print format('%s %s %s', human.name, UserInterface.convert_integer_to_money(human.money), human.streak)
+      puts "\n\n"
     end
   end
 
@@ -48,7 +50,8 @@ module OtherScreens
     if human.inventory.none? { |item| item.uses_left.positive? }
       puts 'No items are usable.'
     elsif human.inventory.one? { |item| item.uses_left.positive? }
-      human.inventory.find { |item| item.uses_left.positive? }.use
+      only_usable_item = human.inventory.find { |item| item.uses_left.positive? }
+      human.use(only_usable_item)
     else
       selected_item = Input.menu_select(human.inventory, 'Which one?')
       return if selected_item.nil?

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Inventory < Screen
-
   TITLE = 'Items'
   SHOP_LENGTH = 50
 
@@ -26,6 +25,7 @@ class Inventory < Screen
 
           listing.map!(&:faint) if item.uses_left.zero?
           listing.map!(&:orange) if HumanPlayer.delayed_inventory.include? item
+          listing.map!(&:yellow) if HumanPlayer.final_inventory.include? item
 
           listing
         end

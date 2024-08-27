@@ -8,12 +8,11 @@ module DiceSwapper
 
     return puts 'Use cancelled.' if selection == :skip
 
-    if self.is_a? Weight
-      Dealer.send("#{selection}=", Dealer.send(selection.to_s).dup << number)
+    if is_a? Weight
+      Dealer.send("#{selection}=", (Dealer.send(selection.to_s).dup << number).flatten)
     else
-      Dealer.send("#{selection}=", self.number)
+      Dealer.send("#{selection}=", number)
     end
-
   end
 
   def pick_die(message = 'Use on which die: ')

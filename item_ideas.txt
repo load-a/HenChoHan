@@ -8,9 +8,9 @@ x Odd Dice
 x Weights (random?)
 x Coattails (see winner)
 x Foresight (see result)
-- Other People's Property (steal winnings)
-- White Elephant (steal guess)
-- Reroll (reroll a bad guess)
+x Other People's Property (steal winnings)
+x White Elephant (steal guess)
+x Reroll (reroll a bad guess)
 - Shop Around (reroll shop items)
 
 Abilities (consumable)

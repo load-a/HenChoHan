@@ -24,9 +24,11 @@ class Game
 
     def play_game
       loop do
+        challenge_the_house if human.streak.include? '++++++'
         npc_turn
         preview_first_round
         player_turn
+        determine_winners
         human.use_delayed_inventory
         finish_round
         determine_outcomes

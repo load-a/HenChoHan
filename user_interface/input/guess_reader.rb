@@ -32,8 +32,6 @@ module GuessReader
     infer_guess_type(guess) != :none
   end
 
-  private
-
   # @return [Symbol]
   def infer_guess_type(guess)
     if guess.is_a? Array
@@ -48,6 +46,8 @@ module GuessReader
       :none
     end
   end
+
+  private
 
   # Converts a guess string into the appropriate data type.
   # @return [Array<Integer, Integer>, Symbol, Integer, String]

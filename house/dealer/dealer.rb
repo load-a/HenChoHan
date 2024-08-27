@@ -13,7 +13,6 @@ class Dealer
   @match = 1
 
   class << self
-
     attr_reader :match, :round, :par, :result
     attr_accessor :die_1, :die_2
 
@@ -60,4 +59,3 @@ class Dealer
     end
   end
 end
-

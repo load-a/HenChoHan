@@ -17,7 +17,7 @@ BACK = %w[back b return undo].freeze
 
 OPTION = {
   item: %w[i item items inventory use u],
-  information: %w[s status stats see me m r rules d dealer]
+  information: %w[s status stats see me m r rules d dealer p previous l last]
 }.freeze
 
 NORMAL = EVEN + ODD
